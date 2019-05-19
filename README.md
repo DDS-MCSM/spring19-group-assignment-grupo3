@@ -41,15 +41,15 @@ Los datos trabajados y obtenidos pueden ser visualziados en la carpeta /data
 Mediante la función Limpiar74() puede ser efectuada la limpieza de datos.
 
 ### Data analysis
-Inicialización de variables programada
-Conversion de datos del tipo char a numérico
-Obtención de nuevos data frames 
-Generación de nuevos campos a partir de análisis de condiciones
-Limpieza de datos
+- Inicialización de variables programada
+- Conversion de datos del tipo char a numérico
+- Obtención de nuevos data frames 
+- Generación de nuevos campos a partir de análisis de condiciones
+- Limpieza de datos
 
 ### Results / Conclusions.
-Los datos resultantes pueden ser accedidos a través de la carpeta /data
-Se cumplieron los objetivos planteados como parte del proceso de aprendizaje 
-del software R, que incluyó la obtención de datos, análisis de su estrutura y generación de 
-información nueva a partir de condiciones aplicadas. Asi como tambien el manejo de packages.
+- Los datos resultantes pueden ser accedidos a través de la carpeta /data
+- Se cumplieron los objetivos planteados como parte del proceso de aprendizaje 
+- del software R, que incluyó la obtención de datos, análisis de su estrutura y generación de 
+- información nueva a partir de condiciones aplicadas. Asi como tambien el manejo de packages.
 
