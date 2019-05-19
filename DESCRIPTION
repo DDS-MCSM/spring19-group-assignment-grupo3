@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Package: Practica1
 Type: Package
 Title: What the Package Does (Title Case)
@@ -9,3 +10,20 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+=======
+Package: GroupAssignmentPackage
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.4.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+>>>>>>> practica1/master
