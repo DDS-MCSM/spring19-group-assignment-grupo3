@@ -21,6 +21,8 @@ downlfile <- function(raw.file = tempfile()){
 downlfile()
 
 
+write.csv(d,"downlfile.csv")
+
 
 
 

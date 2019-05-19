@@ -17,3 +17,5 @@ validateip <- function(df.valid = gn){
                             "Ip OK"))
   return(df.valid)
 }
+
+write.csv(val,"validateip.csv")

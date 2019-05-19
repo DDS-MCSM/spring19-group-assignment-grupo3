@@ -22,3 +22,5 @@ generate <- function(df.osint = df){
 }
 
 generate(df)
+
+write.csv(gn,"generate.csv")
