@@ -22,7 +22,7 @@
 #'
 
 verbose <- TRUE
-
+data.url <- "https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
 
 CrearDirectorio <- function(dir.path="dados3") {
   if (verbose) print("[*] Initial setup")
@@ -36,9 +36,7 @@ CrearDirectorio <- function(dir.path="dados3") {
 return (dir.data)
   }
 # Ejecuta la función sin parametros creara el directorio default.
-
-# CrearDirectorio()
-
+CrearDirectorio()
 
 #' Funcion para descargar y descomprimir
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
@@ -79,7 +77,7 @@ downloadScanIO <- function(data.url, dir.path="dados3", ficherods) {
   rm(scansio.file.gz)
   return (df.tcp)
 }
-
+downloadScanIO(data.url,ficherods)
 
 
 
