@@ -3,7 +3,7 @@
 #    Trabajo DDS
 #    Cristiano Dias / Luiggi
 #
-# ' @Codigo Version 1.2
+# ' @Codigo Version 1.3
 #
 ##################################################################
 #
@@ -92,7 +92,21 @@ downloadScanIO <- function(data.url, dir.path="dados3", filename) {
 # Para ejecutar la descarga del fichero dataset
 # downloadScanIO(data.url)
 
-
+#'
+#' @title Funcion para sacar las n primeras filas del dataframe
+#' @description Con esta función pasamos un data frame y retorna la cantidad de lineas definidas un valor n
+#' @details Para el data frame y un valor numerico
+#' @param df Variable donde almacenamos el data frame
+#' @param nrows Numero de lineas que iremos mostrar
+#' @return pre.df
+#' @export
+#' @examples
+#' genera.df(df, 50)
+genera.df <- function(df, nrows) {
+  # Returna un data frame con n cuantidad de lineas
+  pre.df <- df[1:nrows,]
+  return(pre.df)
+}
 
 
 
