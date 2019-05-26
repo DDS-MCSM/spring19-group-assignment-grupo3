@@ -120,8 +120,40 @@ generate <- function(df.osint = df){
 
 df.select <- generate(df)
 
+#------------------------------------------------------------------
+
+#' Función de geolocalización a partir de una dirección IP
+#' #' @param url
+#' #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
+#' #' @return objeto "ret"
 
 
+install.packages("rjson")
+library(rjson)
+
+geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
+{
+  if (1 == length(ip))
+  {
+    # Obtenemos datos de una sola IP
+    require(rjson)
+    url <- paste(c("http://api.ipstack.com/", ip,"?access_key=0533db13ed22f5c22e17981abcc4696d"), collapse='')
+    ret <- fromJSON(readLines(url, warn=FALSE))
+    if (format == 'dataframe')
+      ret <- data.frame(t(unlist(ret)))
+    return(ret)
+  } else {
+    ret <- data.frame()
+    for (i in 1:length(ip))
+    {
+      r <- freegeoip(ip[i], format="dataframe")
+      ret <- rbind(ret, r)
+    }
+    return(ret)
+  }
+}
+
+geo <- geolocate('90.69.17.77')
 
 
 
