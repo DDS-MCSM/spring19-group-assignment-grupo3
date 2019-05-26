@@ -1,3 +1,13 @@
+##################################################################
+#
+#    Trabajo DDS
+#    Cristiano Dias / Luiggi
+#
+# ' @Codigo Version 1.2
+#
+##################################################################
+#
+#
 # Crear Directorio Workgroup!
 #
 # Some useful keyboard shortcuts for package authoring:
@@ -20,7 +30,7 @@
 #' CrearDirectorio("prueba")
 #' CrearDirectorio()
 #'
-
+filename <- "fichero.csv"
 verbose <- TRUE
 data.url <- "https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
 
@@ -38,10 +48,11 @@ return (dir.data)
 # Ejecuta la función sin parametros creara el directorio default.
 CrearDirectorio()
 
+
 #' Funcion para descargar y descomprimir
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
 #' @param dir.path Nombre del directorio
-#' @param filename Fcihero que tendrá el dataset
+#' @param filename Fichero que tendrá el dataset
 #' @return Devuelve el dataframe descargado con los datos en crudo
 #' @examples
 #' url="https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
@@ -56,7 +67,7 @@ CrearDirectorio()
 #' \dontrun {
 #' dataset=downloadScanIO(url,"http","scansio.http")
 #' }
-downloadScanIO <- function(data.url, dir.path="dados3", ficherods) {
+downloadScanIO <- function(data.url, dir.path="dados3", filename) {
   verbose <- TRUE
   scansio.url <- data.url
 
@@ -68,7 +79,7 @@ downloadScanIO <- function(data.url, dir.path="dados3", ficherods) {
   }
 
   # scans.io - Obtenemos los datos del dataset
-  scansio.source <- file.path(getwd(), dir.path ,ficherods)
+  scansio.source <- file.path(getwd(), dir.path ,"fichero.csv")
   scansio.source.csv <- paste(scansio.source, ".csv" , sep = "")
   scansio.file.gz <- paste(scansio.source.csv, ".gz", sep = "")
   download.file(url = scansio.url, destfile = scansio.file.gz)
@@ -77,7 +88,10 @@ downloadScanIO <- function(data.url, dir.path="dados3", ficherods) {
   rm(scansio.file.gz)
   return (df.tcp)
 }
-downloadScanIO(data.url,ficherods)
+
+# Para ejecutar la descarga del fichero dataset
+# downloadScanIO(data.url)
+
 
 
 
