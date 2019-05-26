@@ -1,14 +1,18 @@
-##################################################################
-#
-#    Trabajo DDS
-#    Cristiano Dias / Luiggi Rodríguez
-#
-# ' @Codigo Version 1.2
-#
-##################################################################
-#
-#
-# Crear Directorio Workgroup!
+---
+title: "Practica 2"
+author: "Cristiano Dias / Luiggi Rodríguez"
+date: "5/26/2019"
+output: html_document
+---
+
+
+  Trabajo DDS
+  Cristiano Dias / Luiggi Rodríguez
+  
+  
+-- Función Crear Directorio Workgroup!
+```{r}
+
 #
 # Some useful keyboard shortcuts for package authoring:
 #
@@ -48,8 +52,13 @@ return (dir.data)
 # Ejecuta la función sin parametros creara el directorio default.
 CrearDirectorio()
 
+```
 
-#' Funcion para descargar y descomprimir
+
+-- Función para descargar y descomprimir
+```{r}
+
+
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
 #' @param dir.path Nombre del directorio
 #' @param filename Fichero que tendrá el dataset
@@ -94,9 +103,11 @@ downloadScanIO <- function(data.url, dir.path="dados3", filename) {
 
 df <- downloadScanIO(data.url)
 
+```
 
-#------------------------------------------------------------------
 
+-- Función selección de muestra
+```{r}
 #' Generar data frame con 500 primeras filas, convierte direcciones
 #' ip a dato numerico y las adiciona como nuevas columnas.
 #' @param df.osint
@@ -119,16 +130,7 @@ generate <- function(df.osint = df){
 }
 
 df.select <- generate(df)
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
