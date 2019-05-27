@@ -519,7 +519,7 @@ geolocate &lt;- function(ip, format = ifelse(length(ip)==1,&#39;list&#39;,&#39;d
     ret &lt;- data.frame()
     for (i in 1:length(ip))
     {
-      r &lt;- freegeoip(ip[i], format=&quot;dataframe&quot;)
+      r &lt;- geolocate(ip[i], format=&quot;dataframe&quot;)
       ret &lt;- rbind(ret, r)
     }
     return(ret)

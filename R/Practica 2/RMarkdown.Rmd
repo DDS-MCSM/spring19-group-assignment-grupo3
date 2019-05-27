@@ -159,7 +159,7 @@ geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
     ret <- data.frame()
     for (i in 1:length(ip))
     {
-      r <- freegeoip(ip[i], format="dataframe")
+      r <- geolocate(ip[i], format="dataframe")
       ret <- rbind(ret, r)
     }
     return(ret)
