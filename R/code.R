@@ -92,3 +92,75 @@ downloadScanIO <- function(data.url, dir.path="dados3", filename) {
 # Para ejecutar la descarga del fichero dataset
 # downloadScanIO(data.url)
 
+df <- downloadScanIO(data.url)
+
+
+#------------------------------------------------------------------
+
+#' Generar data frame con 500 primeras filas, convierte direcciones
+#' ip a dato numerico y las adiciona como nuevas columnas.
+#' @param df.osint
+#' @param verbose valor TRUE
+#' @param scope valor 500 - número de filas objetivo
+#' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
+#' @description Package para generación de dataframe
+#' @return objeto "gn"
+#'
+generate <- function(df.osint = df){
+  verbose <- TRUE
+  scope <- 500
+  if (verbose) print("[*] Selección data frame de 500 filas")
+  df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
+  df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
+  muestra <- sample(1:nrow(df.osint), scope)
+  df.selected <- df.osint[muestra,]
+  rm(muestra)
+  return(df.selected)
+}
+
+df.select <- generate(df)
+
+#------------------------------------------------------------------
+
+#' Función de geolocalización a partir de una dirección IP
+#' #' @param url
+#' #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
+#' #' @return objeto "ret"
+
+
+install.packages("rjson")
+library(rjson)
+
+geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
+{
+  if (1 == length(ip))
+  {
+    # Obtenemos datos de una sola IP
+    require(rjson)
+    url <- paste(c("http://api.ipstack.com/", ip,"?access_key=0533db13ed22f5c22e17981abcc4696d"), collapse='')
+    ret <- fromJSON(readLines(url, warn=FALSE))
+    if (format == 'dataframe')
+      ret <- data.frame(t(unlist(ret)))
+    return(ret)
+  } else {
+    ret <- data.frame()
+    for (i in 1:length(ip))
+    {
+      r <- geolocate(ip[i], format="dataframe")
+      ret <- rbind(ret, r)
+    }
+    return(ret)
+  }
+}
+
+geo <- geolocate('90.69.17.77')
+
+
+
+
+
+
+
+
+
+

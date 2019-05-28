@@ -470,7 +470,7 @@ df &lt;- downloadScanIO(data.url)</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;R.oo&#39;:
 ##   method        from       
 ##   throw.default R.methodsS3</code></pre>
-<p>– Función selección de muestreo</p>
+<p>– Función selección de muestra</p>
 <pre class="r"><code>#&#39; Generar data frame con 500 primeras filas, convierte direcciones
 #&#39; ip a dato numerico y las adiciona como nuevas columnas.
 #&#39; @param df.osint
@@ -494,6 +494,39 @@ generate &lt;- function(df.osint = df){
 
 df.select &lt;- generate(df)</code></pre>
 <pre><code>## [1] &quot;[*] Selección data frame de 500 filas&quot;</code></pre>
+<p>– Función de Geolocalización a partir de IP Address</p>
+<pre class="r"><code>#&#39; Función de geolocalización a partir de una dirección IP
+#&#39; #&#39; @param url
+#&#39; #&#39; @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
+#&#39; #&#39; @return objeto &quot;ret&quot;
+
+
+#install.packages(&quot;rjson&quot;)
+library(rjson)
+
+geolocate &lt;- function(ip, format = ifelse(length(ip)==1,&#39;list&#39;,&#39;dataframe&#39;))
+{
+  if (1 == length(ip))
+  {
+    # Obtenemos datos de una sola IP
+    require(rjson)
+    url &lt;- paste(c(&quot;http://api.ipstack.com/&quot;, ip,&quot;?access_key=0533db13ed22f5c22e17981abcc4696d&quot;), collapse=&#39;&#39;)
+    ret &lt;- fromJSON(readLines(url, warn=FALSE))
+    if (format == &#39;dataframe&#39;)
+      ret &lt;- data.frame(t(unlist(ret)))
+    return(ret)
+  } else {
+    ret &lt;- data.frame()
+    for (i in 1:length(ip))
+    {
+      r &lt;- geolocate(ip[i], format=&quot;dataframe&quot;)
+      ret &lt;- rbind(ret, r)
+    }
+    return(ret)
+  }
+}
+
+geo &lt;- geolocate(&#39;90.69.17.77&#39;)</code></pre>
 
 
 
