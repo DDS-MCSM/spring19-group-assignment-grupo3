@@ -6,17 +6,14 @@
 # ' @Codigo Version 1.2
 #
 ##################################################################
-#
-#
-# Crear Directorio Workgroup!
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Install Package:           'Ctrl + Shift + B'
-#   Check Package:             'Ctrl + Shift + E'
-#   Test Package:              'Ctrl + Shift + T'
 
-# Initial Setup
+
+library(rjson)
+
+
+
+
+
 #' Title Función para crear directorio de trabajo
 #'
 #' @param verbose valor TRUE
@@ -27,9 +24,10 @@
 #' (dir.path) Directorio donde iremos alnacenar los ficheros descargados.
 #'
 #' @examples
+#' \dontrun{
 #' CrearDirectorio("prueba")
 #' CrearDirectorio()
-#'
+#'}
 filename <- "fichero.csv"
 verbose <- TRUE
 data.url <- "https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
@@ -45,8 +43,6 @@ CrearDirectorio <- function(dir.path="dados3") {
   }
 return (dir.data)
   }
-# Ejecuta la función sin parametros creara el directorio default.
-CrearDirectorio()
 
 
 #' Funcion para descargar y descomprimir
@@ -89,11 +85,6 @@ downloadScanIO <- function(data.url, dir.path="dados3", filename) {
   return (df.tcp)
 }
 
-# Para ejecutar la descarga del fichero dataset
-# downloadScanIO(data.url)
-
-df <- downloadScanIO(data.url)
-
 
 #------------------------------------------------------------------
 
@@ -118,23 +109,21 @@ generate <- function(df.osint = df){
   return(df.selected)
 }
 
-df.select <- generate(df)
 
 #------------------------------------------------------------------
 
+#' Geolocate ip address
+#'
 #' Función de geolocalización a partir de una dirección IP
-#' #' @param url
-#' #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
-#' #' @return objeto "ret"
-
-
-install.packages("rjson")
-library(rjson)
-
+#'
+#' @param ip
+#' @param format
+#'
+#' @return objeto "ret"
+#' @export
 geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
 {
-  if (1 == length(ip))
-  {
+  if (1 == length(ip)) {
     # Obtenemos datos de una sola IP
     require(rjson)
     url <- paste(c("http://api.ipstack.com/", ip,"?access_key=0533db13ed22f5c22e17981abcc4696d"), collapse='')
@@ -142,25 +131,15 @@ geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
     if (format == 'dataframe')
       ret <- data.frame(t(unlist(ret)))
     return(ret)
-  } else {
+  }
+  else {
     ret <- data.frame()
     for (i in 1:length(ip))
     {
       r <- geolocate(ip[i], format="dataframe")
+
       ret <- rbind(ret, r)
     }
     return(ret)
   }
 }
-
-geo <- geolocate('90.69.17.77')
-
-
-
-
-
-
-
-
-
-
