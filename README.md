@@ -13,9 +13,11 @@ Función para crear directorio de trabajo del proyecto, donde se almacenarán lo
   - @param verbose Variable de inicialización
   - @param dir.path Define nombre de folder o carpeta donde se almacenarán datasets
   - Devuelve directorio donde se almacenarán datasets
-  
+
+```  
 CrearDirectorio()
-  
+```
+
 ### downloadScanIO()
 
 
