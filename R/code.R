@@ -9,48 +9,43 @@
 
 
 library(rjson)
+library(leaflet)
 
 
-
-
-
-#' Title Función para crear directorio de trabajo
-#'
-#' @param verbose valor TRUE
+#' Función para crear directorio de trabajo
+#' @param verbose Variable de inicialización
+#' @param dir.path Define nombre de folder o carpeta donde se almacenarán datasets
 #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
 #' @description Package para creación de directorio.
 #' @details
 #' (tini) variable donde almacenams la hora del sistema
 #' (dir.path) Directorio donde iremos alnacenar los ficheros descargados.
-#'
 #' @examples
-#' \dontrun{
-#' CrearDirectorio("prueba")
-#' CrearDirectorio()
+#' @return Devuelve directorio donde se almacenarán datasets
 #'}
+#'
 filename <- "fichero.csv"
 verbose <- TRUE
 data.url <- "https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
 
+
+
 CrearDirectorio <- function(dir.path="dados5") {
   if (verbose) print("[*] Initial setup")
-#  tini <- Sys.time()
-#  set.seed(666)
   dir.data <- file.path(getwd(), dir.path)
   if (!dir.exists(dir.data)) {
     if (verbose) print("[*] Create data directory")
     dir.create(dir.data)
-  }
-#return (dir.data)
-
+   }
   }
 
 # Ejecuta la función sin parametros creara el directorio default.
 CrearDirectorio()
 
+
+
 #' Download 1
-#'
-#' Funcion para descargar y descomprimir el dataset con las IPS vulnerables.
+#' Funcion para descargar y descomprimir el dataset con las IPs vulnerables.
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
 #' @param dir.path Nombre del directorio
 #' @param filename Fichero que tendrá el dataset
@@ -80,7 +75,6 @@ downloadScanIO <- function(dir.path="dados5") {
   }
 
   # scans.io - Obtenemos los datos del dataset
-
   scansio.source <- file.path(dir.path ,"fichero.csv")
   scansio.file.gz <- paste(scansio.source, ".gz", sep = "")
   print("[*] Inicio de descarga del dataset.gz")
@@ -95,9 +89,9 @@ downloadScanIO <- function(dir.path="dados5") {
   saveRDS(object = df.tcp, file = file.path(dir.data, "scansio.rds"))
   print("[*] # Fichero scansio.rds creado")
   return(df.tcp)
-
 }
 # Ejecutar funcion downloadScanIO()
+downloadScanIO()
 # a <- downloadScanIO()
 #' Download 2
 #'
@@ -137,6 +131,7 @@ saveRDS(object = df.geoip, file = file.path(dir.data, "geoip.rds"))
 
 return(df.geoip)
  }
+ download.geoip()
 # ' Download 2
 # ' Ejecutar la funcion download.geoip()
 # b <- download.geoip()
@@ -184,18 +179,12 @@ return(df.geoip)
 
 
 
-#' Merge final IP vs Geolozalizacion
+#' Merge final IP vs Geolocalización
 #' Title Funcion para sacar un dataframe con el merge entre las IPs y latitudes y longitudes
 #'
-#' @param scope Numero de observaciones y informaciones de warning.
+#' @param scope Numero de observaciones e informaciones de warning.
 #' @param dirdata Directorio donde iremos almacenar el resultado y guardar el fichero RDS
-#' @param seed
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
+#' @param seed variable de inicialización
 # misips <- getScanIPS()
 
 getScanIPS <- function(scope = 150, dirdata = "dados5", seed = 666) {
@@ -263,7 +252,7 @@ getScanIPS <- function(scope = 150, dirdata = "dados5", seed = 666) {
 
 # install.packages("leaflet")
 
-library(leaflet)
+
 
 getColor <- function(d) {
   sapply(d$src_accuracy_radius, function(src_accuracy_radius) {
@@ -295,7 +284,7 @@ leaflet(d) %>% addTiles() %>%
 
 #' Generar data frame con 500 primeras filas, convierte direcciones
 #' ip a dato numerico y las adiciona como nuevas columnas.
-#' @param df.osint
+#' @param df.osint variable de inicialización
 #' @param verbose valor TRUE
 #' @param scope valor 500 - número de filas objetivo
 #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
@@ -314,8 +303,6 @@ generate <- function(df.osint = df){
   return(df.selected)
 }
 
-
-
 # Funcion Extra ############
 
 #------------------------------------------------------------------
@@ -324,11 +311,9 @@ generate <- function(df.osint = df){
 #'
 #' Función de geolocalización a partir de una dirección IP
 #'
-#' @param ip
-#' @param format
-#'
+#' @param ip dirección IP
+#' @param format variable de formato list o dataframe
 #' @return objeto "ret"
-#' @export
 geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
 {
   if (1 == length(ip)) {
