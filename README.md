@@ -6,6 +6,21 @@ Group Assignment base repository for the Data Driven Security subject of the [Cy
 
 El objetivo del package es permitir el análisis de un dataset TCP Scans para identificar geográficamente los países que reciben mayor número de ataques en el mundo, y también conocer los puntos de geográficos que originan mayor número de ataques, basado en una muestra objetivo.
 
+## Packages importates instalar 
+
+```
+library(ggplot2)
+library(dplyr)
+library(iptools)
+library(leaflet)
+library(markdown)
+library(sp)
+library(rjson)
+library(RColorBrewer)
+library(utils)
+```
+
+
 ## CrearDirectorio()
 
 Función para crear directorio de trabajo del proyecto, donde se almacenarán los datasets que se descargarán y analizarán.
