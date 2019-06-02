@@ -298,7 +298,7 @@ getScanIPS <- function(scope = 150, n.folder = "datasets", seed = 666) {
 
 
 getColor <- function(geoips2) {
-  sapply(d$src_accuracy_radius, function(accuracy_radius) {
+  sapply(geoips2$accuracy_radius, function(accuracy_radius) {
     if(accuracy_radius <= 20) {
       "green"
     } else if(accuracy_radius <= 50) {
