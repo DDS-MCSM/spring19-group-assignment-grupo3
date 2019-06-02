@@ -9,6 +9,8 @@
 
 library(rjson)
 library(leaflet)
+library(ggplot2)
+library(RColorBrewer)
 
 
 #'-------------------------------------CREAR FOLDER DE TRABAJO
@@ -140,7 +142,7 @@ return(df.geoip)
 #'
 generate <- function(df.osint = df.tcp){
   verbose <- TRUE
-  scope <- 500
+  scope <- 50
   if (verbose) print("[*] Selección data frame de 500 filas")
   df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
   df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
@@ -267,26 +269,58 @@ Grafica(geo.ips)
 Grafica(geo.ipd)
 
 #------------------------------------------------
+# Función que grafica los países que generan/reciben mayor número de ataques
 
 
-  a  <-  dplyr::count(geo.ips, PAIS, sort = TRUE)
-  a2<-dplyr::top_n(a, 10)
+top.paises <- function(geo){
 
-  ggplot(a2, aes(x=PAIS, y=n))+
-    geom_point()
-  +
-    facet_wrap(~PAIS)
+  cc  <-  dplyr::count(geo, PAIS, sort = TRUE)
+  top <-dplyr::top_n(cc, 5)
+  names(top) <- c("PAIS", "NUMERO_ATAQUES")
+  myColors <- brewer.pal(9,"Reds")
+  ggplot(top, aes(x=PAIS, y=NUMERO_ATAQUES, fill=NUMERO_ATAQUES))+
+    geom_tile()+
+    scale_fill_gradientn(aesthetics = "fill", colors=myColors, na.value = "grey50")
+}
 
-
-
-
-myColors <- brewer.pal(39,"Reds")
-
-ggplot(a2, aes(x=PAIS, y=n, fill=n))+
-  geom_tile()+
-  scale_fill_gradientn(colors=myColors)
+top.paises(geo.ips)
+top.paises(geo.ipd)
 
 
 
-scale_fill_gradient
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
