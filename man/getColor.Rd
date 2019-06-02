@@ -2,18 +2,27 @@
 % Please edit documentation in R/code.R
 \name{getColor}
 \alias{getColor}
-\title{------------------------------------GRAFICO DE UBICACIÓN DE FUENTES / VICTIMAS DE ATAQUES
-Función de ubicación de fuentes/víctimas de ataques}
+\title{------------------------------------OBTENER COLORES SEGÚN CRITICIDAD
+Función para la obtención de colores según criticidad: verde, naranja, rojo}
 \usage{
-getColor(geoips)
+getColor(geo)
 }
 \arguments{
-\item{geoips}{}
+\item{geo}{En este parámetro se debe ingresar el resultado de la función addIPgeolocation
+A partir de ella se puede trabajar con IPs de origen o destino}
+}
+\value{
+Colores a ser empleados por los íconos del gráfico.
 }
 \description{
-------------------------------------GRAFICO DE UBICACIÓN DE FUENTES / VICTIMAS DE ATAQUES
-Función de ubicación de fuentes/víctimas de ataques
+------------------------------------OBTENER COLORES SEGÚN CRITICIDAD
+Función para la obtención de colores según criticidad: verde, naranja, rojo
 }
 \examples{
+ \dontrun{
+getColor(geo.ips)
+getColor(geo.ipd)
+
+}
 
 }

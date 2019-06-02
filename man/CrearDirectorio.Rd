@@ -22,6 +22,13 @@ Package para creación de directorio.
 (tini) variable donde almacenams la hora del sistema
 (n.folder) Directorio donde iremos alnacenar los ficheros descargados.
 }
+\examples{
+\dontrun{
+CrearDirectorio()
+}
+
+
+}
 \author{
 Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
 }

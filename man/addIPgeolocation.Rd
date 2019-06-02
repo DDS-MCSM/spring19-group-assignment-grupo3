@@ -10,7 +10,7 @@ addIPgeolocation(ips = df.muestra$saddr, df.geoip, boost = FALSE)
 \arguments{
 \item{ips}{arreglo de caracteres correspondientes a direcciones IPv4}
 
-\item{df.geoip}{dataset descargado con la función download.geoip}
+\item{df.geoip}{dataset descargado con la función downloadScanIO}
 
 \item{boost}{variable por defecto inicializada como FALSE. Si es TRUE usará
 parallel computing using multiple cores.}
@@ -23,9 +23,10 @@ dataset df
 Funcion para obtención de geolocalizacion de las IPs
 }
 \examples{
-#' \dontrun{
-geoips <- addIPgeolocation(ips = c("8.8.8.8", "147.81.23.1"),
-                           df.geoip = download.geoip())
+\dontrun{
+ geo.ips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
+ geo.ipd <- addIPgeolocation(ips = df.muestra$daddr, df.geoip = download.geoip())
+
 }
 
 

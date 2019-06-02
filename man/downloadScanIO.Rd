@@ -25,3 +25,9 @@ Función para descargar, descomprimir y almacenar en directorio específico el d
 con las IPs de origen y destino de ataques
 La función incluye la validación de la creación de la carpeta destino
 }
+\examples{
+\dontrun{
+df.tcp <- downloadScanIO()
+}
+
+}

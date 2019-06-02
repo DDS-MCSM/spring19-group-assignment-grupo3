@@ -21,6 +21,12 @@ objeto "df.muestra"
 \description{
 Package para generación de dataframe
 }
+\examples{
+\dontrun{
+df.muestra <- generate()
+}
+
+}
 \author{
 Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
 }
