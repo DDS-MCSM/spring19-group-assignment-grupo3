@@ -3,7 +3,7 @@
 #    Trabajo DDS
 #    Cristiano Dias / Luiggi Rodríguez
 #
-# ' @Codigo Version 1.3
+# ' @Codigo Version 1.4
 #
 ##################################################################
 
@@ -291,7 +291,7 @@ iconos <- function(geo){
 #' la variable precisión que en este caso ha sido llamada ATTACKS.
 #' @param geo En este parámetro se debe ingresar el resultado de la función addIPgeolocation
 #' A partir de ella se puede trabajar con IPs de origen o destino
-#' @return Gráfico de ubicaciones en mapa mundial de Ips Atacantes/Víticmas según caso origen/destino
+#' @return Gráfico de ubicaciones en mapa mundial de Ips Atacantes/Víctimas según caso origen/destino
 #' @export
 #'
 #' @examples

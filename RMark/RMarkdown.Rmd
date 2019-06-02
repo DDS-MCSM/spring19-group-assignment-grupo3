@@ -5,12 +5,26 @@ date: "6/2/2019"
 output: html_document
 ---
 
-
   Trabajo DDS
   Cristiano Dias / Luiggi Rodríguez
-  
+
+Objetivo del Proyecto
+
+El objetivo del proyecto es permitir el análisis de un dataset TCP Scans para identificar 
+geográficamente los países que reciben mayor número de ataques en el mundo, y también conocer 
+los puntos de geográficos que originan mayor número de ataques, basado en una muestra(scope) de 
+500 datos.
+
+
+```{r}
+library(rjson)
+library(leaflet)
+library(ggplot2)
+library(RColorBrewer)
+```
   
 -- Función Crear Directorio de trabajo!
+
 ```{r}
 #
 # Some useful keyboard shortcuts for package authoring:
@@ -46,7 +60,16 @@ CrearDirectorio <- function(n.folder="datasets") {
 # Ejecutar la función sin parametros creara el directorio default.
 CrearDirectorio()
 ```
--- Download 1 - Función para descargar y descomprimir
+
+###Elección del Data Set
+Fuente: Rapid7 Open Data
+Proyecto: TCP scans across IPv4
+Autor: Project Sonar
+Herramientas: Zmap (descubrimiento de vulnerabilidades y su impacto)
+
+
+-- Download 1 - Función para descargar y descomprimir dataset elegido
+
 ```{r}
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
 #' @param dir.path Nombre del directorio
@@ -98,7 +121,10 @@ df.tcp <- downloadScanIO()
 
 
 ```
--- Download 2 - Funcion para descargar y descomprimir dataset con las longitud y latitud
+
+-- Download 2 - Funcion para descargar y descomprimir dataset GeoLite2, dataset que incluye    
+   Información de Geolocalización por rango de redes (CIDRs)
+
 ```{r}
 # Funcion para descargar y descomprimir el dataset MAxmind para obtener las longitudes y
 #' 
@@ -142,7 +168,9 @@ return(df.geoip)
 }
 
 ```
+
 -- Función selección de muestra
+
 ```{r}
 #' Generar data frame con 500 primeras filas, convierte direcciones
 #' ip a dato numerico y las adiciona como nuevas columnas.
@@ -155,7 +183,7 @@ return(df.geoip)
 #'
 generate <- function(df.osint = df.tcp){
   verbose <- TRUE
-  scope <- 50
+  scope <- 100
   if (verbose) print("[*] Selección data frame de 500 filas")
   df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
   df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
@@ -166,73 +194,10 @@ generate <- function(df.osint = df.tcp){
 }
 df.muestra <- generate()
 ```
--- Funcion para obetencion de geolocalizacion de las IPS
-```{r}
-#'------------------------------------GEOLOCALIZACIÓN DE DATOS
-#' Funcion para obtención de geolocalizacion de las IPs
-#'
-#' @param ips arreglo de caracteres correspondientes a direcciones IPv4
-#' @param df.geoip dataset descargado con la función download.geoip
-#' @param boost variable por defecto inicializada como FALSE. Si es TRUE usará
-#' parallel computing using multiple cores.
-#' @return dataset df
-#' @export
-#'
-#' @examples
-#' #' \dontrun{
- #' geoips <- addIPgeolocation(ips = c("8.8.8.8", "147.81.23.1"),
- #'                            df.geoip = download.geoip())
- #' }
- #'
- #'
- addIPgeolocation <- function(ips = df.muestra$saddr, df.geoip, boost = FALSE) {
-   # Para geolocalizar una IP en un rango comprobaremos si está entre la primera
-   # y la ultima ip de cada rango en MaxMind.
-
-   if (all(iptools::is_ipv4(ips))) {
-     ips <- iptools::ip_to_numeric(ips)
-   }
-   df <- data.frame(ip = as.numeric(ips))
-
-   if (boost) {
-     # Usamos multiples cpu's para geolocalizar IPs en rangos
-     no_cores <- parallel::detectCores() - 1
-     cl <- parallel::makeCluster(no_cores)
-     parallel::clusterExport(cl, "df.geoip", envir = environment())
-     df$geoip.rowname <- sapply(ips,
-                                  function(ip)
-                                    which((ip >= df.geoip$min_numeric) &
-                                            (ip <= df.geoip$max_numeric)))
-     parallel::stopCluster(cl)
-     rm(cl, no_cores)
-   } else {
-     df$geoip.rowname <- sapply(ips,
-                                  function(ip)
-                                    which((ip >= df.geoip$min_numeric) &
-                                            (ip <= df.geoip$max_numeric)))
-   }
-
-   df <- dplyr::left_join(df, df.geoip, by = c("geoip.rowname" = "rowname"))
-
-   df <- dplyr::select(df, ip, network, latitude, longitude, accuracy_radius)
-   names(df) <- c("IP_ORIGEN", "RED", "LATITUDE_O", "LONGITUD_O", "ATTACKS")
-
-   return(df)
- }
-
- geo.ips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
- geo.ipd <- addIPgeolocation(ips = df.muestra$daddr, df.geoip = download.geoip())
-
-
- Adiciona.pais <- function(geo){
-   geo$PAIS <-  maps::map.where(database = "world",geo$LONGITUD_O,geo$LATITUDE_O)
-   return(geo)
- }
-
-```
 
 -- Función de Geolocalización a partir de IP Address
 -- Crearemos un dataframe geo.ips , geo.ipd (ips de origen y destino)
+
 ```{r}
 
 #'------------------------------------GEOLOCALIZACIÓN DE DATOS
@@ -301,9 +266,15 @@ df.muestra <- generate()
 
 
 ```
--- Funcion Graficos con los resultos de las muestras obtenidas.
-```{r}
 
+
+#'------------------------------------OBTENER UBICACIONES EN MAPA MUNDIAL
+#' Función que permite obtener ubicaciones en mapa mundial de Ips Atacantes/Víctimas midiendo
+#' la variable precisión que en este caso ha sido llamada ATTACKS.
+-- Función Graficos con los resultados de las muestras obtenidas.
+
+
+```{r}
 #' Función de ubicación de fuentes/víctimas de ataques
 #'
 #' @param geoips En este parámetro se debe ingresar el resultado de la función
@@ -338,7 +309,7 @@ iconos <- function(geo){
   }
 
 icons <- iconos(geo.ips)
-icons <- iconos(geo.ipd)
+#icons <- iconos(geo.ipd)
 
 
 Grafica <- function(geo){
@@ -348,3 +319,39 @@ leaflet(geo) %>% addTiles() %>%
 
 Grafica(geo.ips)
 Grafica(geo.ipd)
+```
+
+---Función que plotea los países que generan/reciben mayor número de ataques en el mundo
+   de acuerdo a una muestra de 500 IPs
+   
+   
+```{r}
+top.paises <- function(geo){
+
+  cc  <-  dplyr::count(geo, PAIS, sort = TRUE)
+  top <-dplyr::top_n(cc, 5)
+  names(top) <- c("PAIS", "NUMERO_ATAQUES")
+  myColors <- brewer.pal(9,"Reds")
+  ggplot(top, aes(x=PAIS, y=NUMERO_ATAQUES, fill=NUMERO_ATAQUES))+
+    geom_tile()+
+    scale_fill_gradientn(aesthetics = "fill", colors=myColors, na.value = "grey50")
+}
+
+top.paises(geo.ips)
+```
+ 
+ 
+ REFERENCIAS:
+ 
+- https://www.varonis.com/blog/cybersecurity-statistics/
+- https://opendata.rapid7.com/
+- https://ipstack.com/
+- Threat Intelligence – Improving SIEM cybercrimanality awareness using information from     
+   blacklists http://disiem-project.eu/wp-content/uploads/2017/11/Threat-Intelligence-Improving-
+   SIEM-cybercriminality-awareness-using-information-from-IP-blacklists.pdf
+- Malicious and Benign Websites – Classify by application and network feature 
+  https://www.kaggle.com/xwolf12/malicious-and-benign-websites
+
+ 
+
+```{r}
