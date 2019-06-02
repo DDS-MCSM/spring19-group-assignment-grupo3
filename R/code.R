@@ -209,8 +209,7 @@ generate <- function(df.osint = df.tcp){
  }
 
 
-
-
+#'------------------------------------ADICIONAR COLUMNA PAISES
 #' Función para adicionar el nombre de país que nos servirá para el posterior análisis
 #' Se adiciona la columna PAIS al dataset
 #' @param geo En este parámetro se debe ingresar el resultado de la función addIPgeolocation
