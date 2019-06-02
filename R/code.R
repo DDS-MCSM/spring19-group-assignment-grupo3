@@ -7,77 +7,66 @@
 #
 ##################################################################
 
-
 library(rjson)
 library(leaflet)
 
 
+#'-------------------------------------CREAR FOLDER DE TRABAJO
 #' Función para crear directorio de trabajo
 #' @param verbose Variable de inicialización
-#' @param dir.path Define nombre de folder o carpeta donde se almacenarán datasets
+#' @param n.folder Define nombre de folder o carpeta donde se almacenarán datasets
 #' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
 #' @description Package para creación de directorio.
 #' @details
 #' (tini) variable donde almacenams la hora del sistema
-#' (dir.path) Directorio donde iremos alnacenar los ficheros descargados.
-#' @examples
+#' (n.folder) Directorio donde iremos alnacenar los ficheros descargados.
 #' @return Devuelve directorio donde se almacenarán datasets
-#'}
 #'
-filename <- "fichero.csv"
-verbose <- TRUE
-data.url <- "https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
+#'
+#'
 
-
-
-CrearDirectorio <- function(dir.path="dados5") {
+CrearDirectorio <- function(n.folder="datasets") {
+  verbose <- TRUE
   if (verbose) print("[*] Initial setup")
-  dir.data <- file.path(getwd(), dir.path)
+  dir.data <- file.path(getwd(), n.folder)
   if (!dir.exists(dir.data)) {
     if (verbose) print("[*] Create data directory")
     dir.create(dir.data)
    }
   }
 
-# Ejecuta la función sin parametros creara el directorio default.
+# Ejecutar la función sin parametros creara el directorio default.
 CrearDirectorio()
 
 
 
-#' Download 1
-#' Funcion para descargar y descomprimir el dataset con las IPs vulnerables.
+#' --------------------------------------DOWNLOAD 1
+#' Función para descargar, descomprimir y almacenar en directorio específico el dataset
+#' con las IPs de origen y destino de ataques
+#' La función incluye la validación de la creación de la carpeta destino
 #' @param data.url Introducir la url con el dataset en formato csv que queremos descargar.
-#' @param dir.path Nombre del directorio
-#' @param filename Fichero que tendrá el dataset
+#' @param n.folder Nombre del folder donde se almacenará dataset
+#' @param filename Nombre de fichero que tendrá el dataset
 #' @return Devuelve el dataframe descargado con los datos en crudo
-#' @examples
-#' url="https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
 #'
-#' downloadScanIO(url,"http","scansio.http")
 #'
-#' dataset=downloadScanIO(url,"http","scansio.http")  # Almacena en la variable dataset
-#'
-#' \dontrun {
-#' downloadScanIO(url,"http","scansio.http")
-#'}
-#' \dontrun {
-#' dataset=downloadScanIO(url,"http","scansio.http")
-#' }
-downloadScanIO <- function(dir.path="dados5") {
+downloadScanIO <- function(n.folder="datasets") {
   verbose <- TRUE
-  scansio.url <- data.url
+  scansio.url <- "https://opendata.rapid7.com/sonar.tcp/2019-05-31-1559342983-http_get_8001.csv.gz"
 
   # Check up carpeta creada
-  dir.data <- file.path(getwd(), dir.path)
+  dir.data <- file.path(getwd(), n.folder)
   if (!dir.exists(dir.data)) {
     if (verbose) print("Directorio esta creado")
     dir.create(dir.data)
   }
 
   # scans.io - Obtenemos los datos del dataset
-  scansio.source <- file.path(dir.path ,"fichero.csv")
+  scansio.source <- file.path(n.folder ,"fichero.csv")
+  scansio.file.csv <- paste(scansio.source, ".csv", sep = "")
   scansio.file.gz <- paste(scansio.source, ".gz", sep = "")
-  print("[*] Inicio de descarga del dataset.gz")
+
+  print("[*] Inicio de descarga del dataset")
   download.file(url = scansio.url, destfile = scansio.file.gz)
   print("[*] Fin de descarga")
   print("[*] Inicio descompresion del fichero .gz")
@@ -85,26 +74,36 @@ downloadScanIO <- function(dir.path="dados5") {
   print("[*] Fichero descomprimido")
   df.tcp <- read.csv(scansio.source, stringsAsFactors = FALSE)
   print("[*] # Elmininar fichero.csv")
-  file.remove(scansio.source)
+  #file.remove(fichero.csv)
   saveRDS(object = df.tcp, file = file.path(dir.data, "scansio.rds"))
   print("[*] # Fichero scansio.rds creado")
   return(df.tcp)
 }
-# Ejecutar funcion downloadScanIO()
+
 downloadScanIO()
-# a <- downloadScanIO()
-#' Download 2
+# Ejecutar funcion downloadScanIO()
+ df.tcp <- downloadScanIO()
+
+
+
+#' ------------------------------------------DOWNLOAD 2
+#' Funcion para descargar y descomprimir el dataset MAxmind para obtener las longitudes y
+#' latitudes.
+#' La función incluye la validación de la creación de la carpeta destino
+#' @param n.folder Nombre del folder donde se almacenará dataset
+#' @return Devuelve dataset descargado con los datos en crudo
 #'
-#' Funcion para descargar y descomprimir el dataset para sacar las longitudes y latitudes.
 #'
- download.geoip <- function(dirdata = "dados5") {
+download.geoip <- function(n.folder = "datasets") {
 
    # Maxmind - Obtener datos en crudo (city)
     geoip.url <- "https://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip"
 
-    dir.data <- file.path(getwd(), dirdata)
-  if (!dir.exists(dir.data)) {
-  dir.create(dir.data)
+    # Check up carpeta creada
+    dir.data <- file.path(getwd(), n.folder)
+    if (!dir.exists(dir.data)) {
+      if (verbose) print("Directorio esta creado")
+      dir.create(dir.data)
     }
 
 geoip.file <- file.path(dir.data, "geoip.zip")
@@ -130,18 +129,57 @@ print("[*] # Crear fichero geoip.rds")
 saveRDS(object = df.geoip, file = file.path(dir.data, "geoip.rds"))
 
 return(df.geoip)
- }
- download.geoip()
-# ' Download 2
+}
+
+download.geoip()
 # ' Ejecutar la funcion download.geoip()
-# b <- download.geoip()
-
-
-# Funcion para sacar la geolocalizacion de las IPs
+df.geoip <- download.geoip()
 
 
 
- addIPgeolocation <- function(ips = "", df.geoip = data.frame(), boost = FALSE) {
+#'--------------------------------------SELECCIÓN MUESTRA - SCOPE
+#' Generar data frame con 500 primeras filas de dataset TCP scans,
+#' convierte direcciones ip a dato numérico y las adiciona como nuevas columnas.
+#' @param df.osint variable de inicialización
+#' @param verbose valor TRUE
+#' @param scope valor 500 - número de filas objetivo
+#' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
+#' @description Package para generación de dataframe
+#' @return objeto "df.muestra"
+#'
+generate <- function(df.osint = df.tcp){
+  verbose <- TRUE
+  scope <- 50
+  if (verbose) print("[*] Selección data frame de 500 filas")
+  df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
+  df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
+  muestra <- sample(1:nrow(df.osint), scope)
+  df.muestra <- df.osint[muestra,]
+  rm(muestra)
+  return(df.muestra)
+}
+
+df.muestra <- generate()
+
+
+#'------------------------------------GEOLOCALIZACIÓN DE DATOS
+#' Funcion para obtención de geolocalizacion de las IPs
+#'
+#' @param ips arreglo de caracteres correspondientes a direcciones IPv4
+#' @param df.geoip dataset descargado con la función download.geoip
+#' @param boost variable por defecto inicializada como FALSE. Si es TRUE usará
+#' parallel computing using multiple cores.
+#' @return dataset df
+#' @export
+#'
+#' @examples
+#' #' \dontrun{
+ #' geoips <- addIPgeolocation(ips = c("8.8.8.8", "147.81.23.1"),
+ #'                            df.geoip = download.geoip())
+ #' }
+ #'
+ #'
+ addIPgeolocation <- function(ips = df.muestra$saddr, df.geoip, boost = FALSE) {
    # Para geolocalizar una IP en un rango comprobaremos si está entre la primera
    # y la ultima ip de cada rango en MaxMind.
 
@@ -179,31 +217,36 @@ return(df.geoip)
 
 
 
+ geoips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
+
+
+
+
 #' Merge final IP vs Geolocalización
 #' Title Funcion para sacar un dataframe con el merge entre las IPs y latitudes y longitudes
 #'
 #' @param scope Numero de observaciones e informaciones de warning.
-#' @param dirdata Directorio donde iremos almacenar el resultado y guardar el fichero RDS
+#' @param n.folder Directorio donde iremos almacenar el resultado y guardar el fichero RDS
 #' @param seed variable de inicialización
 # misips <- getScanIPS()
 
-getScanIPS <- function(scope = 150, dirdata = "dados5", seed = 666) {
+getScanIPS <- function(scope = 150, n.folder = "datasets", seed = 666) {
    set.seed(seed)
-   dir.data <- file.path(getwd(), dirdata)
+   dir.data <- file.path(getwd(), n.folder)
    if (!dir.exists(dir.data)) {
      dir.create(dir.data)
    }
 
    print("[*] Load source data sets")
-   if (file.exists(file.path(dirdata, "scansio.rds"))) {
-     df <- readRDS(file.path(dirdata, "scansio.rds"))
+   if (file.exists(file.path(n.folder, "scansio.rds"))) {
+     df <- readRDS(file.path(n.folder, "scansio.rds"))
    } else {
-     df <- download.ftp.scans.io(dirdata)
+     df <- download.ftp.scans.io(n.folder)
    }
-   if (file.exists(file.path(dirdata, "geoip.rds"))) {
-     df.geoip <- readRDS(file.path(dirdata, "geoip.rds"))
+   if (file.exists(file.path(n.folder, "geoip.rds"))) {
+     df.geoip <- readRDS(file.path(n.folder, "geoip.rds"))
    } else {
-     df.geoip <- download.geoip(dirdata)
+     df.geoip <- download.geoip(n.folder)
    }
 
    print("[*] Prepare scans.io data.frame")
@@ -245,7 +288,7 @@ getScanIPS <- function(scope = 150, dirdata = "dados5", seed = 666) {
    return(df)
  }
 
- d <- getScanIPS()
+ df <- getScanIPS()
 
 #### Dibujar Grafico ###########
 # Instalar package leaflet
@@ -277,31 +320,10 @@ leaflet(d) %>% addTiles() %>%
   addAwesomeMarkers(~dst_longitude, ~dst_latitude, icon=icons, label=~as.character(src_accuracy_radius))
 
 
-############################################################################
 
 
-# Package EXTRA ####################
 
-#' Generar data frame con 500 primeras filas, convierte direcciones
-#' ip a dato numerico y las adiciona como nuevas columnas.
-#' @param df.osint variable de inicialización
-#' @param verbose valor TRUE
-#' @param scope valor 500 - número de filas objetivo
-#' @author Cristiano Dias / Luiggi Alexis Rodriguez Ruiz
-#' @description Package para generación de dataframe
-#' @return objeto "gn"
-#'
-generate <- function(df.osint = df){
-  verbose <- TRUE
-  scope <- 500
-  if (verbose) print("[*] Selección data frame de 500 filas")
-  df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
-  df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
-  muestra <- sample(1:nrow(df.osint), scope)
-  df.selected <- df.osint[muestra,]
-  rm(muestra)
-  return(df.selected)
-}
+
 
 # Funcion Extra ############
 

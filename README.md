@@ -11,7 +11,7 @@ El objetivo del package es permitir el análisis de un dataset TCP Scans para id
 Función para crear directorio de trabajo del proyecto, donde se almacenarán los datasets que se descargarán y analizarán.
   
   - @param verbose Variable de inicialización
-  - @param dir.path Define nombre de folder o carpeta donde se almacenarán datasets
+  - @param n.folder Define nombre de folder o carpeta donde se almacenarán datasets
   - Devuelve directorio donde se almacenarán datasets
 
 ```  
@@ -19,13 +19,27 @@ CrearDirectorio()
 ```
 
 ### downloadScanIO()
+Función para descargar, descomprimir y almacenar en directorio específico el dataset con las IPs de origen y destino de ataques.
+La función incluye la validación de la creación de la carpeta destino para almacenar dataset.
 
+  - @param data.url Introducir la url con el dataset en formato csv que queremos descargar
+  - @param n.folder Nombre del folder donde se almacenará dataset
+  - @return Devuelve dataframe descargado con datos en crudo: (df.tcp)
 
-
+```  
+downloadScanIO <- function(n.folder="datasets")
+```
 
 ### download.geoip()
+Funcion para descargar y descomprimir el dataset Maxmind para obtener las longitudes y latitudes.
+La función incluye la validación de la creación de la carpeta destino para almacenar dataset.
 
-
+  - @param n.folder Nombre del folder donde se almacenará dataset
+  - @return Devuelve dataframe descargado con datos en crudo: (df.geoip)
+  
+```  
+download.geoip <- function(n.folder = "datasets")
+```
 
 ### addIPgeolocation()
 
