@@ -2,18 +2,21 @@
 % Please edit documentation in R/code.R
 \name{generate}
 \alias{generate}
-\title{Generar data frame con 500 primeras filas, convierte direcciones
-ip a dato numerico y las adiciona como nuevas columnas.}
+\title{--------------------------------------SELECCIÓN MUESTRA - SCOPE
+Generar data frame con 500 primeras filas de dataset TCP scans,
+convierte direcciones ip a dato numérico y las adiciona como nuevas columnas.}
 \usage{
-generate(df.osint = df)
+generate(df.osint = df.tcp)
 }
 \arguments{
+\item{df.osint}{variable de inicialización}
+
 \item{verbose}{valor TRUE}
 
 \item{scope}{valor 500 - número de filas objetivo}
 }
 \value{
-objeto "gn"
+objeto "df.muestra"
 }
 \description{
 Package para generación de dataframe

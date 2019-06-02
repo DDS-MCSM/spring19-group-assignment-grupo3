@@ -80,9 +80,8 @@ downloadScanIO <- function(n.folder="datasets") {
   return(df.tcp)
 }
 
-downloadScanIO()
 # Ejecutar funcion downloadScanIO()
- df.tcp <- downloadScanIO()
+df.tcp <- downloadScanIO()
 
 
 
@@ -125,9 +124,6 @@ df.geoip <- cbind(df.geoip, iptools::range_boundaries(df.geoip$network))
 df.geoip$rowname <- as.integer(row.names(df.geoip))
 df.geoip$range <- NULL
 
-print("[*] # Crear fichero geoip.rds")
-saveRDS(object = df.geoip, file = file.path(dir.data, "geoip.rds"))
-
 return(df.geoip)
 }
 
@@ -144,7 +140,7 @@ return(df.geoip)
 #'
 generate <- function(df.osint = df.tcp){
   verbose <- TRUE
-  scope <- 50
+  scope <- 500
   if (verbose) print("[*] Selección data frame de 500 filas")
   df.osint$saddr.num <- iptools::ip_to_numeric(df.osint$saddr)
   df.osint$daddr.num <- iptools::ip_to_numeric(df.osint$daddr)
@@ -209,22 +205,31 @@ df.muestra <- generate()
    return(df)
  }
 
- geoips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
- geoips$PAIS <-  maps::map.where(database = "world",geoips$LONGITUD_O,geoips$LATITUDE_O)
+ geo.ips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
+ geo.ipd <- addIPgeolocation(ips = df.muestra$daddr, df.geoip = download.geoip())
+
+
+ Adiciona.pais <- function(geo){
+   geo$PAIS <-  maps::map.where(database = "world",geo$LONGITUD_O,geo$LATITUDE_O)
+   return(geo)
+ }
+
+ geo.ips <- Adiciona.pais(geo.ips)
+ geo.ipd <- Adiciona.pais(geo.ipd)
 
 
  #'------------------------------------GRAFICO DE UBICACIÓN DE FUENTES / VICTIMAS DE ATAQUES
 
 #' Función de ubicación de fuentes/víctimas de ataques
 #'
-#' @param geoips
-#'
+#' @param geoips En este parámetro se debe ingresar el resultado de la función addIPgeolocation para obtener la
+#' gráfica correspondiente a ubicación de Fuentes / Víctimas de Ataques
 #' @return
 #' @export
 #' @examples
 #'
-getColor <- function(geoips) {
-  sapply(geoips$ATTACKS, function(ATTACKS) {
+getColor <- function(geo) {
+  sapply(geo$ATTACKS, function(ATTACKS) {
     if(ATTACKS <= 20) {
       "green"
     } else if(ATTACKS <= 50) {
@@ -234,125 +239,54 @@ getColor <- function(geoips) {
     } })
 }
 
-icons <- awesomeIcons(
-  icon = 'ios-close',
-  iconColor = 'black',
-  library = 'ion',
-  markerColor = getColor(geoips)
-)
+getColor(geo.ips)
+getColor(geo.ipd)
 
 
-leaflet(geoips) %>% addTiles() %>%
+iconos <- function(geo){
+  icons <- awesomeIcons(
+    icon = 'ios-close',
+    iconColor = 'black',
+    library = 'ion',
+    markerColor = getColor(geo)
+  )
+  return(icons)
+  }
+
+icons <- iconos(geo.ips)
+icons <- iconos(geo.ipd)
+
+
+
+Grafica <- function(geo){
+leaflet(geo) %>% addTiles() %>%
   addAwesomeMarkers(~LONGITUD_O, ~LATITUDE_O, icon=icons, label=~as.character(ATTACKS))
-
-
-
-
-
-
-
-# Funcion Extra ############
-
-#------------------------------------------------------------------
-
-#' Merge final IP vs Geolocalización
-#' Title Funcion para sacar un dataframe con el merge entre las IPs y latitudes y longitudes
-#'
-#' @param scope Numero de observaciones e informaciones de warning.
-#' @param n.folder Directorio donde iremos almacenar el resultado y guardar el fichero RDS
-#' @param seed variable de inicialización
-# misips <- getScanIPS()
-
-getScanIPS <- function(scope = 150, n.folder = "datasets", seed = 666) {
-  set.seed(seed)
-  dir.data <- file.path(getwd(), n.folder)
-  if (!dir.exists(dir.data)) {
-    dir.create(dir.data)
-  }
-
-  print("[*] Load source data sets")
-  if (file.exists(file.path(n.folder, "scansio.rds"))) {
-    df <- readRDS(file.path(n.folder, "scansio.rds"))
-  } else {
-    df <- download.ftp.scans.io(n.folder)
-  }
-  if (file.exists(file.path(n.folder, "geoip.rds"))) {
-    df.geoip <- readRDS(file.path(n.folder, "geoip.rds"))
-  } else {
-    df.geoip <- download.geoip(n.folder)
-  }
-
-  print("[*] Prepare scans.io data.frame")
-  # Seleccionamos una muestra de scans
-  df <- df[sample(1:nrow(df), scope),]
-
-  # Transformamos las IPs a formato decimal
-  df$saddr.num <- iptools::ip_to_numeric(df$saddr)
-  df$daddr.num <- iptools::ip_to_numeric(df$daddr)
-
-  print("[*] Find IP geolocation data")
-  # Geolocalizamos las IPs origen y destino
-  geo.src <- addIPgeolocation(ips = df$saddr,
-                              df.geoip = df.geoip,
-                              boost = scope > 1000)
-  geo.dst <- addIPgeolocation(ips = df$daddr,
-                              df.geoip = df.geoip,
-                              boost = scope > 1000)
-
-  print("[*] Tidy data frame")
-  names(geo.src) <- paste("src_", names(geo.src), sep = "")
-  names(geo.dst) <- paste("dst_", names(geo.dst), sep = "")
-
-  # Preparamos el data frame
-  df <- dplyr::bind_cols(df, geo.src, geo.dst)
-  df$dst_is_anonymous_proxy <- as.factor(df$dst_is_anonymous_proxy)
-  df$src_is_anonymous_proxy <- as.factor(df$src_is_anonymous_proxy)
-  df$dst_is_satellite_provider <- as.factor(df$dst_is_satellite_provider)
-  df$src_is_satellite_provider <- as.factor(df$src_is_satellite_provider)
-
-  df <- dplyr::select(df, timestamp_ts, ttl,
-                      saddr, sport, src_network, src_latitude, src_longitude,
-                      src_accuracy_radius, src_is_anonymous_proxy, src_is_satellite_provider,
-                      daddr, dport, dst_network, dst_latitude, dst_longitude,
-                      dst_accuracy_radius, dst_is_anonymous_proxy, dst_is_satellite_provider)
-
-  saveRDS(object = df, file = file.path(dir.data, "getScansioFTPs.rds"))
-
-  return(df)
 }
 
-df <- getScanIPS()
+Grafica(geo.ips)
+Grafica(geo.ipd)
 
-#------------------------------------------------------------------
-#' Geolocate ip address
-#'
-#' Función de geolocalización a partir de una dirección IP
-#'
-#' @param ip dirección IP
-#' @param format variable de formato list o dataframe
-#' @return objeto "ret"
-geolocate <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
-{
-  if (1 == length(ip)) {
-    # Obtenemos datos de una sola IP
-    require(rjson)
-    url <- paste(c("http://api.ipstack.com/", ip,"?access_key=0533db13ed22f5c22e17981abcc4696d"), collapse='')
-    ret <- fromJSON(readLines(url, warn=FALSE))
-    if (format == 'dataframe')
-      ret <- data.frame(t(unlist(ret)))
-    return(ret)
-  }
-  else {
-    ret <- data.frame()
-    for (i in 1:length(ip))
-    {
-      r <- geolocate(ip[i], format="dataframe")
+#------------------------------------------------
 
-      ret <- rbind(ret, r)
-    }
-    return(ret)
-  }
-}
 
-geo <- geolocate('90.69.17.77')
+  a  <-  dplyr::count(geo.ips, PAIS, sort = TRUE)
+  a2<-dplyr::top_n(a, 10)
+
+  ggplot(a2, aes(x=PAIS, y=n))+
+    geom_point()
+  +
+    facet_wrap(~PAIS)
+
+
+
+
+myColors <- brewer.pal(39,"Reds")
+
+ggplot(a2, aes(x=PAIS, y=n, fill=n))+
+  geom_tile()+
+  scale_fill_gradientn(colors=myColors)
+
+
+
+scale_fill_gradient
 

@@ -2,34 +2,26 @@
 % Please edit documentation in R/code.R
 \name{downloadScanIO}
 \alias{downloadScanIO}
-\title{Funcion para descargar y descomprimir}
+\title{--------------------------------------DOWNLOAD 1
+Función para descargar, descomprimir y almacenar en directorio específico el dataset
+con las IPs de origen y destino de ataques
+La función incluye la validación de la creación de la carpeta destino}
 \usage{
-downloadScanIO(data.url, dir.path = "dados3", filename)
+downloadScanIO(n.folder = "datasets")
 }
 \arguments{
+\item{n.folder}{Nombre del folder donde se almacenará dataset}
+
 \item{data.url}{Introducir la url con el dataset en formato csv que queremos descargar.}
 
-\item{dir.path}{Nombre del directorio}
-
-\item{filename}{Fichero que tendrá el dataset}
+\item{filename}{Nombre de fichero que tendrá el dataset}
 }
 \value{
 Devuelve el dataframe descargado con los datos en crudo
 }
 \description{
-Funcion para descargar y descomprimir
-}
-\examples{
-url="https://opendata.rapid7.com/sonar.tcp/2019-04-20-1555725774-https_get_16993.csv.gz"
-
-downloadScanIO(url,"http","scansio.http")
-
-dataset=downloadScanIO(url,"http","scansio.http")  # Almacena en la variable dataset
-
-\dontrun {
-downloadScanIO(url,"http","scansio.http")
-}
-\dontrun {
-dataset=downloadScanIO(url,"http","scansio.http")
-}
+--------------------------------------DOWNLOAD 1
+Función para descargar, descomprimir y almacenar en directorio específico el dataset
+con las IPs de origen y destino de ataques
+La función incluye la validación de la creación de la carpeta destino
 }
