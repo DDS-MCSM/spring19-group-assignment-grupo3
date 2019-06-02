@@ -217,8 +217,8 @@ df.muestra <- generate()
 
 
 
- geoips <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
-
+ geoips2 <- addIPgeolocation(ips = df.muestra$saddr, df.geoip = download.geoip())
+ geoips2$Pais <-  maps::map.where(database = "world",geoips2$longitude,geoips2$latitude)
 
 
 
@@ -297,11 +297,11 @@ getScanIPS <- function(scope = 150, n.folder = "datasets", seed = 666) {
 
 
 
-getColor <- function(d) {
-  sapply(d$src_accuracy_radius, function(src_accuracy_radius) {
-    if(src_accuracy_radius <= 20) {
+getColor <- function(geoips2) {
+  sapply(d$src_accuracy_radius, function(accuracy_radius) {
+    if(accuracy_radius <= 20) {
       "green"
-    } else if(src_accuracy_radius <= 50) {
+    } else if(accuracy_radius <= 50) {
       "orange"
     } else {
       "red"
@@ -312,12 +312,12 @@ icons <- awesomeIcons(
   icon = 'ios-close',
   iconColor = 'black',
   library = 'ion',
-  markerColor = getColor(d)
+  markerColor = getColor(geoips2)
 )
 
 
-leaflet(d) %>% addTiles() %>%
-  addAwesomeMarkers(~dst_longitude, ~dst_latitude, icon=icons, label=~as.character(src_accuracy_radius))
+leaflet(geoips2) %>% addTiles() %>%
+  addAwesomeMarkers(~longitude, ~latitude, icon=icons, label=~as.character(accuracy_radius))
 
 
 
